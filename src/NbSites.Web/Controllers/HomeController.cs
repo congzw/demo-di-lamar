@@ -11,6 +11,12 @@ namespace NbSites.Web.Controllers
             return View();
         }
 
+        [HttpGet("Render/{view=Index}")]
+        public IActionResult Render(string view)
+        {
+            return View(view);
+        }
+
         [HttpGet("Switch")]
         public IActionResult Switch()
         {

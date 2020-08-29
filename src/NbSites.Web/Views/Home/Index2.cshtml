@@ -1,18 +1,14 @@
-﻿@using NbSites.Libs.Services
-@using NbSites.Web.MultiTenancy
-@inject IBarService BarService
-@inject TenantConfig Config
-@inject IHelloService HelloService
-@inject IHelloService HelloService2
-@inject EmptyService EmptyService
+﻿@using Microsoft.Extensions.DependencyInjection
+@using NbSites.Libs.Services
+@inject IHelloService current
 @{
-    BarService.DoSomeRealWork();
+    var all = this.Context.RequestServices.GetServices<IHelloService>();
 }
 <h2>@this.Path</h2>
 <hr />
-<p>ID: @Config.InstanceId</p>
-<p>NAME: @Config.TenantKey</p>
-<p>HelloTest: @HelloService.Hello()</p>
+<p>current: @current.ToString()</p>
 <hr />
-<p>EmptyService: @EmptyService.Id</p>
-<p>EmptyService: @EmptyService.Id</p>
+@foreach (var item in all)
+{
+    <p>@item.ToString()</p>
+}

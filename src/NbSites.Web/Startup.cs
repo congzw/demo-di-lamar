@@ -50,6 +50,19 @@ namespace NbSites.Web
                 return tenantConfig;
             }, tenantKeyHold.TenantKeys);
 
+            //demo for named service : e.g. => theme support
+
+            services.For<IHelloService>().Use<HelloService>().Scoped().Named("");
+            services.For<IHelloService>().Use<Hello2Service>().Scoped().Named("Theme1");
+            services.AddTransient<IHelloService>(sp =>
+            {
+                //todo read from context
+                var theme = "Theme1";
+                var container = sp as IContainer;
+                return container.GetInstance<IHelloService>(theme);
+            });
+
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // Also exposes Lamar specific registrations
