@@ -1,0 +1,60 @@
+﻿@using System.IO
+@using Lamar
+@using Microsoft.Extensions.DependencyInjection
+@using NbSites.Libs.Services
+@using NbSites.Web
+@using NbSites.Web.DI.Lamar
+@using NbSites.Web.MultiTenancy
+@inject EmptyService EmptyService
+@inject EmptyService EmptyService2
+@inject IContainer Container
+@inject TenantConfig currentTenantConfig;
+@{
+
+    var contextRequestServices = this.Context.RequestServices;
+    var sameContainer = Container == contextRequestServices;
+    var rootProvider = MyTempHold.RootProvider;
+
+    var tenantContext = contextRequestServices.GetService<TenantContext>();
+
+    var A = contextRequestServices.GetTenantSingleton<TenantConfig>("A");
+    var A1 = contextRequestServices.GetTenantSingleton<TenantConfig>("A");
+
+    var B = contextRequestServices.GetTenantSingleton<TenantConfig>("B");
+    var B1 = contextRequestServices.GetTenantSingleton<TenantConfig>("B");
+
+    var Empty = contextRequestServices.GetTenantSingleton<TenantConfig>("");
+
+    var all = contextRequestServices.GetServices<TenantConfig>();
+    
+    var okStyle = currentTenantConfig.TenantName.Equals(tenantContext.Tenant, StringComparison.OrdinalIgnoreCase) ? "color: green" : "color: red";
+
+}
+<h2>@this.Path</h2>
+<h2>@Directory.GetCurrentDirectory()</h2>
+<h2>@AppContext.BaseDirectory</h2>
+<hr />
+<p>EmptyService: @EmptyService.Id</p>
+<p>EmptyService2: @EmptyService2.Id</p>
+<hr />
+<p>Container: @Container.GetType().FullName, @Container.GetHashCode()</p>
+<p>contextRequestServices: @contextRequestServices.GetType().FullName, @contextRequestServices.GetHashCode()</p>
+<p>rootProvider: @rootProvider.GetType().FullName, @sameContainer.GetHashCode()</p>
+<p>sameContainer: @sameContainer</p>
+<hr />
+<p style="@okStyle">currentContext: @tenantContext.Tenant, current: @currentTenantConfig.TenantDescription</p>
+<p>@A.ToString()</p>
+<p>@A1.ToString()</p>
+<p>@B.ToString()</p>
+<p>@B1.ToString()</p>
+<p style="color: red">empty: @Empty.ToString()</p>
+<p>current: @currentTenantConfig.ToString()</p>
+<hr />
+@foreach (var item in all)
+{
+    var styleValue = string.IsNullOrWhiteSpace(item.TenantName) ? "color: red" : "";
+    <p style="@styleValue">@item.ToString()</p>
+}
+<hr />
+<p>@Container.WhatDidIScan()</p>
+@*<p>@Container.HowDoIBuild()</p>*@

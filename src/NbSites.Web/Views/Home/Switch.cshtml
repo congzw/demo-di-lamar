@@ -1,0 +1,16 @@
+﻿@using NbSites.Web.MultiTenancy
+@inject TenantKeyHold Hold
+@{
+    var currentOne = TenantContextService.Mock.Tenant;
+    var newOne = currentOne;
+    foreach (var holdTenantKey in Hold.TenantKeys)
+    {
+        if (!Hold.SameTenant(currentOne, holdTenantKey))
+        {
+            newOne = holdTenantKey;
+            TenantContextService.Mock.Tenant = newOne;
+            break;
+        }
+    }
+}
+<h2>Switch FROM @currentOne TO @newOne</h2>

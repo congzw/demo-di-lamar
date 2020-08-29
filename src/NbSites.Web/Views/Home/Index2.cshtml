@@ -1,0 +1,18 @@
+﻿@using NbSites.Libs.Services
+@using NbSites.Web.MultiTenancy
+@inject IBarService BarService
+@inject TenantConfig Config
+@inject IHelloService HelloService
+@inject IHelloService HelloService2
+@inject EmptyService EmptyService
+@{
+    BarService.DoSomeRealWork();
+}
+<h2>@this.Path</h2>
+<hr />
+<p>ID: @Config.Id</p>
+<p>NAME: @Config.TenantName</p>
+<p>HelloTest: @HelloService.Hello()</p>
+<hr />
+<p>EmptyService: @EmptyService.Id</p>
+<p>EmptyService: @EmptyService.Id</p>

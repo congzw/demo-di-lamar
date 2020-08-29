@@ -1,0 +1,30 @@
+﻿@using System.IO
+@using Lamar
+@using Microsoft.Extensions.DependencyInjection
+@using NbSites.Libs.Services
+@using NbSites.Web
+@using NbSites.Web.MultiTenancy
+@inject EmptyService EmptyService
+@inject EmptyService EmptyService2
+@inject IContainer Container
+@inject TenantConfig currentTenantConfig;
+@{
+    var rootProvider = MyTempHold.RootProvider;
+    var contextRequestServices = this.Context.RequestServices;
+    var tenantContext = contextRequestServices.GetService<TenantContext>();
+    var okStyle = currentTenantConfig.TenantName.Equals(tenantContext.Tenant, StringComparison.OrdinalIgnoreCase) ? "color: green" : "color: red";
+    var all = rootProvider.GetServices<TenantConfig>();
+
+}
+<h2>@this.Path</h2>
+<h2>@Directory.GetCurrentDirectory()</h2>
+<h2>@AppContext.BaseDirectory</h2>
+<hr />
+<p style="@okStyle">currentContext: @tenantContext.Tenant, current: @currentTenantConfig.TenantDescription</p>
+<p>current: @currentTenantConfig.ToString()</p>
+<hr />
+@foreach (var item in all)
+{
+    var styleValue = string.IsNullOrWhiteSpace(item.TenantName) ? "color: red" : "";
+    <p style="@styleValue">@item.ToString()</p>
+}
