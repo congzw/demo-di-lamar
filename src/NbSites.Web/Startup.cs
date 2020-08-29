@@ -25,15 +25,17 @@ namespace NbSites.Web
             _env = env;
         }
 
-        //public void ConfigureServices(IServiceCollection services)
-        //{
-        //    services.AddTransient<EmptyService>();
-        //    services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-        //}
+        public void ConfigureServices(IServiceCollection services)
+        {
+            //step => 2.1
+
+            //services.AddTransient<EmptyService>();
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+        }
 
         public void ConfigureContainer(ServiceRegistry services)
         {
-            //step => 2
+            //step => 2.2
             services.AddScoped<ITenantContextService, TenantContextService>();
             services.AddScoped(sp => sp.GetService<ITenantContextService>().GetCurrentTenantContext());
 
@@ -57,9 +59,9 @@ namespace NbSites.Web
             services.AddTransient<IHelloService>(sp =>
             {
                 //todo read from context
-                var theme = "Theme1";
-                var container = sp as IContainer;
-                return container.GetInstance<IHelloService>(theme);
+                var currentTheme = "Theme1";
+                var container = (IContainer)sp;
+                return container.GetInstance<IHelloService>(currentTheme);
             });
 
 
@@ -70,7 +72,7 @@ namespace NbSites.Web
             services.Scan(s =>
             {
                 s.TheCallingAssembly();
-                s.Assembly(typeof(BarService).Assembly);
+                s.Assembly(typeof(EmptyService).Assembly);
                 s.WithDefaultConventions(ServiceLifetime.Scoped);
                 s.WithDefaultConventions(OverwriteBehavior.Never);
             });

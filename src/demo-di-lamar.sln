@@ -5,7 +5,12 @@ VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NbSites.Web", "NbSites.Web\NbSites.Web.csproj", "{1B0ACB4A-4CFE-4537-8ADE-C77C5D96C4DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NbSites.Libs", "NbSites.Libs\NbSites.Libs.csproj", "{AD57FC76-589A-4134-8FC8-9E05FEEBFBD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NbSites.Libs", "NbSites.Libs\NbSites.Libs.csproj", "{AD57FC76-589A-4134-8FC8-9E05FEEBFBD2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{81FF2257-2D88-41AC-BF57-9112CF13F44C}"
+	ProjectSection(SolutionItems) = preProject
+		..\readme.md = ..\readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
