@@ -4,7 +4,6 @@ using System.Linq;
 using Lamar;
 using Lamar.IoC.Instances;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using NbSites.Web.MultiTenancy;
 
 namespace NbSites.Web.DI.Lamar
@@ -29,49 +28,36 @@ namespace NbSites.Web.DI.Lamar
         
         public static IServiceCollection AddTenantSingletons(this IServiceCollection services, Type serviceType, Func<IServiceProvider, string, object> factory, IList<string> tenants)
         {
-            
-            var notEmptyTenants = tenants.Where(x => !string.IsNullOrWhiteSpace(x));
-            foreach (var tenant in notEmptyTenants)
-            {
-                var tenantCopy = tenant;
-                services.AddTenantSingleton(serviceType, provider => factory(provider, tenantCopy), tenantCopy);
-            }
-
-            //hack default resolve => use same tenant with ""
-            services.AddTenantSingleton(serviceType, provider => factory(provider, string.Empty), string.Empty);
-
-            return services;
-        }
-
-        private static IServiceCollection AddTenantSingleton(this IServiceCollection services, Type serviceType, Func<IServiceProvider, object> factory, string tenant)
-        {
             var serviceRegistry = services as ServiceRegistry;
             if (serviceRegistry == null)
             {
                 throw new InvalidOperationException("无效的DI类型，此实现接受类型：" + typeof(ServiceRegistry).FullName);
             }
 
+            foreach (var tenant in tenants)
+            {
+                serviceRegistry.AddTenantSingleton(serviceType, provider => factory(provider, tenant), tenant);
+            }
+
+            //hack: resolve current by context
+            serviceRegistry.For(serviceType).Use(new LambdaInstance(serviceType, provider =>
+            {
+                var tenantContext = provider.GetRequiredService<TenantContext>();
+                return provider.GetTenantSingleton(serviceType, tenantContext.Tenant);
+            }, ServiceLifetime.Transient));
+
+            return services;
+        }
+
+        private static ServiceRegistry AddTenantSingleton(this ServiceRegistry serviceRegistry, Type serviceType, Func<IServiceProvider, object> factory, string tenant)
+        {
             var tenantKey = string.Empty;
             if (!string.IsNullOrWhiteSpace(tenant))
             {
                 tenantKey = tenant.ToLower();
             }
-
-            //特殊处理EMPTY
-            if (string.IsNullOrWhiteSpace(tenant))
-            {
-                serviceRegistry.For(serviceType).Use(new LambdaInstance(serviceType, factory, ServiceLifetime.Singleton).Named(tenantKey));
-                serviceRegistry.For(serviceType).Use(new LambdaInstance(serviceType, provider =>
-                {
-                    var tenantContext = provider.GetRequiredService<TenantContext>();
-                    return provider.GetTenantSingleton(serviceType, tenantContext.Tenant);
-                    }, ServiceLifetime.Transient));
-            }
-            else
-            {
-                serviceRegistry.For(serviceType).Use(new LambdaInstance(serviceType, factory, ServiceLifetime.Singleton).Named(tenantKey));
-            }
-            return services;
+            serviceRegistry.For(serviceType).Use(new LambdaInstance(serviceType, factory, ServiceLifetime.Singleton).Named(tenantKey));
+            return serviceRegistry;
         }
 
         #region for easy use
@@ -83,17 +69,6 @@ namespace NbSites.Web.DI.Lamar
         
         public static T GetTenantSingleton<T>(this IServiceProvider provider, string tenant)
         {
-            return (T)provider.GetTenantSingleton(typeof(T), tenant);
-        }
-
-        public static T GetCurrentTenantSingleton<T>(this IServiceProvider provider)
-        {
-            var tenant = string.Empty;
-            var context = provider.GetRequiredService<TenantContext>();
-            if (!string.IsNullOrWhiteSpace(context.Tenant))
-            {
-                tenant = context.Tenant;
-            }
             return (T)provider.GetTenantSingleton(typeof(T), tenant);
         }
 

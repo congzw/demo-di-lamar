@@ -27,7 +27,7 @@
 
     var all = contextRequestServices.GetServices<TenantConfig>();
     
-    var okStyle = currentTenantConfig.TenantName.Equals(tenantContext.Tenant, StringComparison.OrdinalIgnoreCase) ? "color: green" : "color: red";
+    var okStyle = currentTenantConfig.TenantKey.Equals(tenantContext.Tenant, StringComparison.OrdinalIgnoreCase) ? "color: green" : "color: red";
 
 }
 <h2>@this.Path</h2>
@@ -42,7 +42,7 @@
 <p>rootProvider: @rootProvider.GetType().FullName, @sameContainer.GetHashCode()</p>
 <p>sameContainer: @sameContainer</p>
 <hr />
-<p style="@okStyle">currentContext: @tenantContext.Tenant, current: @currentTenantConfig.TenantDescription</p>
+<p style="@okStyle">currentContext: @tenantContext.Tenant, current: @currentTenantConfig.TenantName</p>
 <p>@A.ToString()</p>
 <p>@A1.ToString()</p>
 <p>@B.ToString()</p>
@@ -52,7 +52,7 @@
 <hr />
 @foreach (var item in all)
 {
-    var styleValue = string.IsNullOrWhiteSpace(item.TenantName) ? "color: red" : "";
+    var styleValue = string.IsNullOrWhiteSpace(item.TenantKey) ? "color: red" : "";
     <p style="@styleValue">@item.ToString()</p>
 }
 <hr />

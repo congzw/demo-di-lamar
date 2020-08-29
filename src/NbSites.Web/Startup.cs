@@ -44,8 +44,8 @@ namespace NbSites.Web
             {
                 var tenantConfig = new TenantConfig()
                 {
-                    TenantName = tenant,
-                    TenantDescription = string.IsNullOrWhiteSpace(tenant) ? "租户:默认" : "租户:" + tenant
+                    TenantKey = tenant,
+                    TenantName = string.IsNullOrWhiteSpace(tenant) ? "租户:默认" : "租户:" + tenant
                 };
                 return tenantConfig;
             }, tenantKeyHold.TenantKeys);
@@ -61,18 +61,6 @@ namespace NbSites.Web
                 s.WithDefaultConventions(ServiceLifetime.Scoped);
                 s.WithDefaultConventions(OverwriteBehavior.Never);
             });
-
-            //services.Replace(ServiceDescriptor.Scoped<IHelloService>(sp =>
-            //{
-            //    var tenantContext = sp.GetService<TenantContext>();
-            //    if (string.IsNullOrWhiteSpace(tenantContext.Tenant))
-            //    {
-            //        return sp.GetService<HelloService>();
-            //    }
-            //    return sp.GetService<Hello2Service>();
-            //}));
-
-
         }
 
         public void Configure(IApplicationBuilder app)

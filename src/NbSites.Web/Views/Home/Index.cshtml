@@ -1,30 +1,25 @@
-﻿@using System.IO
-@using Lamar
+﻿@using Lamar
 @using Microsoft.Extensions.DependencyInjection
 @using NbSites.Libs.Services
-@using NbSites.Web
 @using NbSites.Web.MultiTenancy
 @inject EmptyService EmptyService
 @inject EmptyService EmptyService2
 @inject IContainer Container
 @inject TenantConfig currentTenantConfig;
 @{
-    var rootProvider = MyTempHold.RootProvider;
+    //var rootProvider = MyTempHold.RootProvider;
     var contextRequestServices = this.Context.RequestServices;
     var tenantContext = contextRequestServices.GetService<TenantContext>();
-    var okStyle = currentTenantConfig.TenantName.Equals(tenantContext.Tenant, StringComparison.OrdinalIgnoreCase) ? "color: green" : "color: red";
-    var all = rootProvider.GetServices<TenantConfig>();
-
+    var okStyle = currentTenantConfig.TenantKey.Equals(tenantContext.Tenant, StringComparison.OrdinalIgnoreCase) ? "color: green" : "color: red";
+    var all = contextRequestServices.GetServices<TenantConfig>().GroupBy(x => x.InstanceId).Select(x => x.FirstOrDefault());
 }
 <h2>@this.Path</h2>
-<h2>@Directory.GetCurrentDirectory()</h2>
-<h2>@AppContext.BaseDirectory</h2>
 <hr />
-<p style="@okStyle">currentContext: @tenantContext.Tenant, current: @currentTenantConfig.TenantDescription</p>
+<p style="@okStyle">currentContext: @tenantContext.Tenant, current: @currentTenantConfig.TenantName</p>
 <p>current: @currentTenantConfig.ToString()</p>
 <hr />
 @foreach (var item in all)
 {
-    var styleValue = string.IsNullOrWhiteSpace(item.TenantName) ? "color: red" : "";
-    <p style="@styleValue">@item.ToString()</p>
+    var currentStyle = item.TenantKey.Equals(tenantContext.Tenant, StringComparison.OrdinalIgnoreCase) ? "color: green" : "";
+    <p style="@currentStyle">@item.ToString()</p>
 }

@@ -2,15 +2,20 @@
 @inject TenantKeyHold Hold
 @{
     var currentOne = TenantContextService.Mock.Tenant;
-    var newOne = currentOne;
+    var currentIndex = 0;
+
     foreach (var holdTenantKey in Hold.TenantKeys)
     {
-        if (!Hold.SameTenant(currentOne, holdTenantKey))
+        if (Hold.SameTenant(currentOne, holdTenantKey))
         {
-            newOne = holdTenantKey;
-            TenantContextService.Mock.Tenant = newOne;
             break;
         }
+        currentIndex++;
     }
+
+    var nextIndex = (currentIndex + 1) % Hold.TenantKeys.Count;
+    var newOne = Hold.TenantKeys[nextIndex];
+    TenantContextService.Mock.Tenant = newOne;
 }
-<h2>Switch FROM @currentOne TO @newOne</h2>
+<p>[@currentIndex] -> [@nextIndex]</p>
+<h2>Switch FROM '@(currentOne)' TO '@newOne'</h2>
